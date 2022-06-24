@@ -3,8 +3,11 @@ import hashlib
 from asyncpg import Record
 from s3 import S3File
 from fastapi import UploadFile, File
+from app.exceptions import NotFoundException, BadRequest
 from app.services.db import DB
 from app.services.s3 import S3
+
+# TODO: get_file jj/ ломает
 
 async def get_file_names(path: str) -> list[str]:
     return await S3.list_file_names(path)
@@ -20,7 +23,7 @@ async def delete_file(path: str) -> None:
 
 # TODO: change this lazy synchronization
 async def synchronize_files() -> None:
-    def add_file(path: S3File):
+    async def add_file(path: S3File):
         sql = """
             insert into files(source, description, date)
             values ($1, null, $2)
@@ -40,8 +43,10 @@ async def get_file(path: str) -> (Record, list[Record],str):
         where source = $1
     """
     file = await DB.fetchrow(sql,path)
+    if not file:
+        raise NotFoundException('Файл не найден')
     data = await S3.download_file(path)
-    datatype = path.split()[-1]
+    datatype = path.split('.')[-1]
     fname = f'{hashlib.sha224(data).hexdigest()}.{datatype}'
     with open(f'static/{fname}', mode='wb+') as f:
         f.write(data)
@@ -51,4 +56,5 @@ async def get_file(path: str) -> (Record, list[Record],str):
         on ft.file_id = $1
     """
     tags = await DB.fetch(sql, path)
-    return file,tags,fname
+    print(file,tags,fname)
+    return file,tags,f'static/{fname}'

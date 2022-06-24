@@ -40,7 +40,7 @@ async def login(request: OAuth2PasswordRequestForm = Depends()) -> dict:
     return {"access_token": access_token, "token_type": "bearer"}
 
 @users_router.get('/user', response_model=UserOut)
-async def get_user_name(login: str = Depends(get_current_user)) -> str:
+async def get_user_data(login: str = Depends(get_current_user)) -> str:
     user = await users_queries.get_user_by_username(login)
     user = format_record(user, UserOut)
     return user
