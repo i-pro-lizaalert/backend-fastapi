@@ -2,7 +2,7 @@ import hashlib
 from fastapi import UploadFile, File
 from asyncpg import Record
 from asyncpg.exceptions import UniqueViolationError, PostgresError
-from app.db.db import DB
+from app.services.db import DB
 from app.exceptions import BadRequest, NotFoundException, InternalServerError
 
 

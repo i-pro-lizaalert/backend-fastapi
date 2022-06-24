@@ -4,7 +4,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 #
-from app.db.db import DB
+from app.services.db import DB
+from app.services.s3 import S3
 from app.exceptions import CommonException, InternalServerError
 from app.routers.users import users_router
 
@@ -15,20 +16,14 @@ app = FastAPI(title='I-PRO Backend')
 @app.on_event('startup')
 async def startup() -> None:
     await DB.connect_db()
+    await S3.connect_s3()
+    await S3.list_file_names('')
 
 @app.on_event('shutdown')
 async def shutdown() -> None:
     await DB.disconnect_db()
+    await S3.disconnect_s3()
 
-# @app.middleware('http')
-# async def log_request(request: Request, pending_call):
-#     start_time = perf_counter()
-#     response = await pending_call(request)
-#     processed_time = (perf_counter() - start_time)
-#     formatted_time = '{0:.5f}'.format(processed_time)
-#     logger.info(f'{ctime()}: path={request.url.path}, method={request.method}, processed={formatted_time}')
-#     return response
-#
 @app.exception_handler(CommonException)
 async def common_exception_handler(request: Request, exception: CommonException) -> JSONResponse:
     # logger.error(exception.error)
