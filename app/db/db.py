@@ -21,34 +21,40 @@ class DB:
 
     @classmethod
     async def connect_db(cls) -> None:
-        print(DATABASE_URL)
         try:
             cls.pool = await asyncpg.create_pool(DATABASE_URL)
-            print(cls.pool)
         except Exception as e:
             print(e)
 
     @classmethod
     @exception_wrapper
     async def execute(cls, sql, *args) -> None:
+        if not cls.pool:
+            await DB.connect_db()
         async with cls.pool.acquire() as con:
             return await con.execute(sql, *args)
 
     @classmethod
     @exception_wrapper
     async def fetch(cls, sql, *args) -> list[Record]:
+        if not cls.pool:
+            await DB.connect_db()
         async with cls.pool.acquire() as con:
             return await con.fetch(sql, *args)
 
     @classmethod
     @exception_wrapper
     async def fetchval(cls, sql, *args):
+        if not cls.pool:
+            await DB.connect_db()
         async with cls.pool.acquire() as con:
             return await con.fetchval(sql, *args)
 
     @classmethod
     @exception_wrapper
     async def fetchrow(cls, sql, *args) -> Record:
+        if not cls.pool:
+            await DB.connect_db()
         async with cls.pool.acquire() as con:
             return await con.fetchrow(sql, *args)
 
