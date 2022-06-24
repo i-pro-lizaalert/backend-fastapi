@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - ":5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=lizaalert
+    restart: always
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    volumes:
+      - .:/code
+    ports:
+      - "8088:8088"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:12345678@db:5432/lizaalert
+      - SERVER_PORT=8088
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=600
+      - S3_ACCESS_KEY=YCAJEOoGXCGYmq13hUzt0yQIP
+      - S3_SECRET_KEY=YCNc2bXw1ItDf1vcatfaU-kaxwoAbMVn5rE8E862
+      - S3_BUCKET=lizaalert
+    restart: always
