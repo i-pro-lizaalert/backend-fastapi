@@ -13,7 +13,7 @@ from app.auth.jwt_token import create_access_token
 from app.auth.oauth2 import get_current_user
 from app.exceptions import ForbiddenException
 from app.settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models import FileTags, SuccessfullResponse, Case, CaseIn, Photo, PhotoOut, CaseOut
+from app.models import FileTags, SuccessfullResponse, Case, CaseIn, Photo, PhotoOut, CaseOut, UserOut2
 from app.utils import format_record, format_records
 import app.queries.files as files_queries
 
@@ -28,6 +28,12 @@ async def update_case(case: Case) -> SuccessfullResponse:
 async def get_cases() -> list[CaseOut]:
     result = await cases_queries.get_cases()
     result = format_records(result, CaseOut)
+    return result
+
+@cases_router.get('/case/user/all', response_model=list[UserOut2])
+async def get_case_users(id: UUID = Query(..., title='UUID кейса')):
+    result = await cases_queries.get_case_users(id)
+    result = format_records(result, UserOut2)
     return result
 
 @cases_router.get('/user/case/all', response_model=list[CaseOut])

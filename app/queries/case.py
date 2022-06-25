@@ -22,21 +22,24 @@ async def update_case(id: UUID, name: str) -> UUID:
 
 async def get_cases() -> list[Record]:
     sql = """
-        select c.id, c.name, count(fc.file_id) as photos from cases as c
-        join files_cases fc on c.id = fc.case_id
-        group by c.name, c.id
+        select c.id, c.name from cases as c
     """
     return await DB.fetch(sql)
 
+async def get_case_users(id: UUID) -> list[Record]:
+    sql = """
+        select username from users 
+        full outer join users_cases uc on users.id = uc.user_id
+        where uc.case_id = $1
+    """
+    return await DB.fetch(sql, id)
 
 async def get_user_cases(username: str) -> list[Record]:
     sql = """
-        select c.id, c.name, count(fc.file_id) as photos from cases as c
+        select c.id, c.name from cases as c
         join users_cases uc on c.id = uc.case_id
         join users as u on uc.user_id = u.id
-        join files_cases fc on c.id = fc.case_id
         where u.username = $1
-        group by c.name, c.id
     """
     return await DB.fetch(sql, username)
 

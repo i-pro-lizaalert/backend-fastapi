@@ -55,3 +55,6 @@ class CaseOut(BaseModel):
 
 class CaseIn(BaseModel):
     id: UUID = Field(..., title='ID кейса')
+
+class UserOut2(BaseModel):
+    username: str = Field(None, title='Имя аккаунта')
