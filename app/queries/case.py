@@ -6,7 +6,7 @@ from asyncpg import Record
 from app.services.db import DB
 from app.services.s3 import S3
 from app.queries.files import get_file
-from app.models import Photo
+from app.models import Photo, CaseOut
 from asyncpg.exceptions import UniqueViolationError, ForeignKeyViolationError
 from app.exceptions import BadRequest, NotFoundException
 
@@ -22,16 +22,21 @@ async def update_case(id: UUID, name: str) -> UUID:
 
 async def get_cases() -> list[Record]:
     sql = """
-        select c.id, c.name from cases as c
+        select c.id, c.name, count(fc.file_id) as photos from cases as c
+        join files_cases fc on c.id = fc.case_id
+        group by c.name, c.id
     """
     return await DB.fetch(sql)
 
+
 async def get_user_cases(username: str) -> list[Record]:
     sql = """
-        select c.id, c.name from cases as c
+        select c.id, c.name, count(fc.file_id) as photos from cases as c
         join users_cases uc on c.id = uc.case_id
         join users as u on uc.user_id = u.id
+        join files_cases fc on c.id = fc.case_id
         where u.username = $1
+        group by c.name, c.id
     """
     return await DB.fetch(sql, username)
 

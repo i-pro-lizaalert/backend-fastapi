@@ -51,9 +51,10 @@ async def get_file(path: str) -> (Record, list[Record],str):
     with open(f'static/{fname}', mode='wb+') as f:
         f.write(data)
     sql = """
-        select name from tags as t
+        select t.name from tags as t
         join files_tags as ft
-        on ft.file_id = $1
+        on ft.tag_id = t.id
+        where ft.file_id = $1
     """
     tags = await DB.fetch(sql, path)
     print(file,tags,fname)
