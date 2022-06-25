@@ -50,8 +50,8 @@ class Case(BaseModel):
 class CaseOut(BaseModel):
     id: UUID = Field(None, title='ID кейса')
     name: str = Field(..., title='Имя кейса')
-    participated: int = Field(None, title='Количество участников')
-    photos: int = Field(None, title='Количество фоток')
+    participated: int = Field(0, title='Количество участников')
+    photos: int = Field(0, title='Количество фоток')
 
 class CaseIn(BaseModel):
     id: UUID = Field(..., title='ID кейса')

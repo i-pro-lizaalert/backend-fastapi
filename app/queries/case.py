@@ -22,21 +22,16 @@ async def update_case(id: UUID, name: str) -> UUID:
 
 async def get_cases() -> list[Record]:
     sql = """
-        select c.id, c.name, count(uc.user_id) as participated, count(fc.case_id) as photos from cases as c
-        join users_cases uc on c.id = uc.case_id
-        left join files_cases fc on c.id = fc.case_id
-        group by c.id, c.name
+        select c.id, c.name from cases as c
     """
     return await DB.fetch(sql)
 
 async def get_user_cases(username: str) -> list[Record]:
     sql = """
-        select c.id, c.name, count(u.id) as participated, count(fc.case_id) as photos from cases as c
+        select c.id, c.name from cases as c
         join users_cases uc on c.id = uc.case_id
         join users as u on uc.user_id = u.id
-        left join files_cases fc on c.id = fc.case_id
         where u.username = $1
-        group by c.name, c.id
     """
     return await DB.fetch(sql, username)
 
@@ -67,7 +62,7 @@ async def add_user_to_case(username: str, id: UUID) -> None:
     user_id = await DB.fetchval(sql, username)
     sql = """
         insert into users_cases(user_id, case_id) 
-        values ($1, $2)
+        values ($1, $2) on conflict do nothing
     """
     try:
         await DB.execute(sql, user_id, id)
