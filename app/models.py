@@ -47,5 +47,11 @@ class Case(BaseModel):
     id: UUID = Field(None, title='ID кейса')
     name: str = Field(..., title='Имя кейса')
 
+class CaseOut(BaseModel):
+    id: UUID = Field(None, title='ID кейса')
+    name: str = Field(..., title='Имя кейса')
+    participated: int = Field(None, title='Количество участников')
+    photos: int = Field(None, title='Количество фоток')
+
 class CaseIn(BaseModel):
     id: UUID = Field(..., title='ID кейса')

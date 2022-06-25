@@ -13,7 +13,7 @@ from app.auth.jwt_token import create_access_token
 from app.auth.oauth2 import get_current_user
 from app.exceptions import ForbiddenException
 from app.settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models import FileTags, SuccessfullResponse, Case, CaseIn, Photo, PhotoOut
+from app.models import FileTags, SuccessfullResponse, Case, CaseIn, Photo, PhotoOut, CaseOut
 from app.utils import format_record, format_records
 import app.queries.files as files_queries
 
@@ -24,16 +24,16 @@ async def update_case(case: Case) -> SuccessfullResponse:
     result = await cases_queries.update_case(case.id, case.name)
     return result
 
-@cases_router.get('/case/all', response_model=list[Case])
-async def get_cases() -> list[Case]:
+@cases_router.get('/case/all', response_model=list[CaseOut])
+async def get_cases() -> list[CaseOut]:
     result = await cases_queries.get_cases()
-    result = format_records(result, Case)
+    result = format_records(result, CaseOut)
     return result
 
-@cases_router.get('/user/case/all', response_model=list[Case])
-async def get_user_cases(username: str = Depends(get_current_user)) -> list[Case]:
+@cases_router.get('/user/case/all', response_model=list[CaseOut])
+async def get_user_cases(username: str = Depends(get_current_user)) -> list[CaseOut]:
     result = await cases_queries.get_user_cases(username)
-    result = format_records(result, Case)
+    result = format_records(result, CaseOut)
     return result
 
 @cases_router.delete('/case', response_model=SuccessfullResponse)

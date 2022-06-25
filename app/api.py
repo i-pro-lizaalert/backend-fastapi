@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 #
 from app.services.db import DB
 from app.services.s3 import S3
-from app.exceptions import CommonException
+from app.exceptions import CommonException, InternalServerError
 from app.queries.files import synchronize_files
 from app.routers.users import users_router
 from app.routers.tags import tags_router
