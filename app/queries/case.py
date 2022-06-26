@@ -87,8 +87,8 @@ async def check_user_case(username: str, id: UUID) -> int:
             where u.username = $1 and uc.case_id = $2
         """
     user_id = await DB.fetchval(sql, username, id)
-    if not user_id:
-        raise NotFoundException('Пользователь не учавствует в кейсе')
+    #if not user_id:
+    #    raise NotFoundException('Пользователь не учавствует в кейсе')
     return user_id
 
 async def check_file(path: str) -> None:
