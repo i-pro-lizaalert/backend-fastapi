@@ -24,6 +24,13 @@
 - yandex-s3
 - Digital Ocean
 
+## Запуск решения 
+
+```bash
+# <...>
+
+```
+
 
 ---
 # I PRO
